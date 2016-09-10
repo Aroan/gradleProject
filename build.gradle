@@ -1,0 +1,132 @@
+group 'com.argiope'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bluepapa32:gradle-watch-plugin:0.1.3'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'watch'
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//统一编码为utf-8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral();
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+    maven {
+        url  'https://mvnrepository.com/'
+    }
+
+}
+
+ext{
+    springVersion = '4.1.6.RELEASE'
+    mybatisVersion = '3.4.1'
+}
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+
+
+    //环境编译
+    //导入本地的依赖包
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //compile 'ch.qos.logback:logback-classic:1.1.3'
+    compile "org.springframework:spring-webmvc:$springVersion"
+    /*mybatis start*/
+    compile  "org.mybatis:mybatis:$mybatisVersion"
+    /*确保其在编译时被引用发布时不会被打包*/
+    providedCompile 'javax.servlet:jstl:1.2'
+    /*跨域过滤器jar*/
+    compile 'com.thetransactioncompany:cors-filter:2.5'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.7'
+    /*依赖本地包*/
+    /*compile fileTree(dir: 'libs', include: ['*.jar'])*/
+
+
+}
+
+// Embeded Jetty for testing
+jettyRun {
+    println "version $version"
+    println 'jetty starting...........'
+    httpPort=9000
+    contextPath=''
+    scanIntervalSeconds= 30
+    reload="automatic"
+    stopPort=9090
+    stopKey='foo'
+}
+jettyRun.dependsOn('jettyStop')
+jettyStop {
+    println 'stop jetty.....'
+    stopPort=9090
+    stopKey='foo'
+}
+watch {
+    java {
+        files files('src/main/java')
+        tasks 'compileJava'
+    }
+    resources {
+        files fileTree(dir: 'src/main/resources', include: ['**/*.xml','**/*.properties'])
+        tasks 'processResources'
+    }
+}
+
+
+
+
+//定义包装器
+task wrapper(type: Wrapper){
+    gradleVersion=2.14
+}
+
+//定义版本信息
+class ProjectVersion{
+    Integer major;
+    Integer minor;
+    Boolean release;
+    ProjectVersion(Integer major,Integer minor){
+        this.major = major;
+        this.minor = minor;
+    }
+    ProjectVersion(Integer major,Integer minor,Boolean release){
+        this.major = major;
+        this.minor = minor;
+        this.release = release;
+    }
+    String toString(){
+        "$major.$minor${release?'':'-SNAPSHOT'}";
+    }
+}
+task reloadVersion{
+    project.version = readVersion()
+}
+ProjectVersion readVersion(){
+    def versionFile = file("version.properties");
+    logger.quiet 'read the version file';
+    if(!versionFile.exists()){
+        throw new GradleException("Required version file does not exist:$versionFile.canoncalPath")
+    }
+    Properties versionProps = new Properties();
+    versionFile.withInputStream{stream -> versionProps.load(stream)}
+    new ProjectVersion(versionProps.major.toInteger(),
+            versionProps.minor.toInteger(),versionProps.release.toBoolean()
+    );
+}

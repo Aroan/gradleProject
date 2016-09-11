@@ -4,9 +4,6 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-    <properties resource="mysql.properties"/>
-    <classPathEntry location="${mysql.classpath}" />
-
     <context id="mysqlTables" targetRuntime="MyBatis3">
         <!-- 为了防止生成的代码中有很多注释，比较难看，加入下面的配置控制 -->
         <commentGenerator>
@@ -14,30 +11,30 @@
             <property name="suppressDate" value="true" />
         </commentGenerator>
         <!-- 注释控制完毕 -->
-        <jdbcConnection driverClass="${mysql.driver}"
-                        connectionURL="${mysql.url}"
-                        userId="${mysql.user}"
-                        password="${mysql.password}">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.1.111:3306/test?characterEncoding=utf8"
+                        userId="root"
+                        password="root">
         </jdbcConnection>
 
         <javaTypeResolver >
             <property name="forceBigDecimals" value="false" />
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="com.argiope.entity" targetProject="${project}">
+        <javaModelGenerator targetPackage="com.argiope.entity" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="com.argiope.mapper"  targetProject="${project}">
+        <sqlMapGenerator targetPackage="com.argiope.mapper"  targetProject="src/main/resources">
             <property name="enableSubPackages" value="true" />
         </sqlMapGenerator>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.argiope.dao"  targetProject="${project}">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.argiope.dao"  targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table  tableName="ALLTYPES" domainObjectName="Customer" enableCountByExample="false" enableUpdateByExample="false"
+        <table  tableName="A" domainObjectName="Customer" enableCountByExample="false" enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false"
                 selectByExampleQueryId="false">
         </table>

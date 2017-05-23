@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
+    <properties url="file:///D:/gitworkspace/gradleProject/src/main/resources/mysql.properties"/>
     <context id="mysqlTables" targetRuntime="MyBatis3">
         <!-- 为了防止生成的代码中有很多注释，比较难看，加入下面的配置控制 -->
         <commentGenerator>
@@ -11,11 +12,15 @@
             <property name="suppressDate" value="true" />
         </commentGenerator>
         <!-- 注释控制完毕 -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+        <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://192.168.1.111:3306/test?characterEncoding=utf8"
                         userId="root"
                         password="root">
-        </jdbcConnection>
+        </jdbcConnection>-->
+        <jdbcConnection driverClass="oracle.jdbc.OracleDriver"
+                        connectionURL="${url}"
+                        password="${username}"
+                        userId="${password}"/>
 
         <javaTypeResolver >
             <property name="forceBigDecimals" value="false" />
@@ -34,7 +39,11 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table  tableName="A" domainObjectName="Customer" enableCountByExample="false" enableUpdateByExample="false"
+       <!-- <table  tableName="A" domainObjectName="Customer" enableCountByExample="false" enableUpdateByExample="false"
+                enableDeleteByExample="false" enableSelectByExample="false"
+                selectByExampleQueryId="false">
+        </table>-->
+        <table  tableName="auto_form" domainObjectName="Customer" enableCountByExample="false" enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false"
                 selectByExampleQueryId="false">
         </table>
